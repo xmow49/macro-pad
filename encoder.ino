@@ -1,21 +1,15 @@
-// Used for generating interrupts using CLK signal
-const int PinA = 7;
+#include "HID-Project.h"
 
-// Used for reading DT signal
+const int PinA = 7;
 const int PinB = 6;
 
-// Used for the push button switch
 const int PinSW = 8;
 
-// Keep track of last rotary value
-int lastCount = 50;
 
-// Updated by the ISR (Interrupt Service Routine)
+int lastCount = 50;
 volatile int virtualPosition = 50;
 
-// ------------------------------------------------------------------
-// INTERRUPT     INTERRUPT     INTERRUPT     INTERRUPT     INTERRUPT
-// ------------------------------------------------------------------
+
 void isr ()  {
   static unsigned long lastInterruptTime = 0;
   unsigned long interruptTime = millis();
@@ -39,9 +33,6 @@ void isr ()  {
   lastInterruptTime = interruptTime;
 }
 
-// ------------------------------------------------------------------
-// SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP
-// ------------------------------------------------------------------
 void setup() {
   // Just whilst we debug, view output on serial monitor
   Serial.begin(9600);
@@ -58,31 +49,29 @@ void setup() {
 
   // Ready to go!
   Serial.println("Start");
+  //Keyboard.begin();
+  Consumer.begin();
+
 }
 
-// ------------------------------------------------------------------
-// MAIN LOOP     MAIN LOOP     MAIN LOOP     MAIN LOOP     MAIN LOOP
-// ------------------------------------------------------------------
 void loop() {
 
-  // Is someone pressing the rotary switch?
-  if ((!digitalRead(PinSW))) {
-    virtualPosition = 50;
-    while (!digitalRead(PinSW))
-      delay(10);
-    Serial.println("Reset");
-  }
 
-  // If the current rotary switch position has changed then update everything
+  // If the current rotary switch position has changed then update everythinguuuuuuuu
   if (virtualPosition != lastCount) {
 
     // Write out to serial monitor the value and direction
     Serial.print(virtualPosition > lastCount ? "Up  :" : "Down:");
     Serial.println(virtualPosition);
 
-    // Keep track of this new value
+    if (virtualPosition > lastCount) {
+      Consumer.write(MEDIA_VOL_UP);
+    } else {
+      Consumer.write(MEDIA_VOL_DOWN);
+    }
+
+    // Keep track of this new valueuuu
     lastCount = virtualPosition ;
   }
 
-  //delay(100);
 }
